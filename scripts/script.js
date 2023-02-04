@@ -1,23 +1,5 @@
 import { RANDOM_WORD_API_KEY } from "./env.js";
 
-/*
-The completed application should meet the following criteria:
-
-✅ As a user, I want to start the game by clicking on a button.
-✅ As a user, I want to try and guess a word by filling in a number of blanks that match the number of letters in that word.
-✅ As a user, I want the game to be timed.
-✅ As a user, I want to win the game when I have guessed all the letters in the word.
-✅ As a user, I want to lose the game when the timer runs out before I have guessed all the letters.
-✅ As a user, I want to see my total wins and losses on the screen.
-
-Specifications
-✅ When a user presses a letter key, the user's guess should be captured as a key event.
-✅ When a user correctly guesses a letter, the corresponding blank "_" should be replaced by the letter. For example, if the user correctly selects "a", then "a _ _ a _" should appear.
-✅ When a user wins or loses a game, a message should appear and the timer should stop.
-✅ When a user clicks the start button, the timer should reset.
-✅ When a user refreshes or returns to the brower page, the win and loss counts should persist.
-*/
-
 var wordToGuessElement = document.querySelector("#word-to-guess");
 var startButton = document.querySelector("#start-button");
 var timerElement = document.querySelector("#timer");
@@ -31,7 +13,11 @@ var currentWordToGuess = "";
 var blankedWord = [];
 var score;
 
-function init() {
+var successAudio = new Audio("../assets/success.mp3");
+var failAudio = new Audio("../assets/fail.mp3");
+
+// Initialize the game on page load.
+window.onload = function () {
   score = JSON.parse(localStorage.getItem("score"));
 
   if (!score) {
@@ -42,9 +28,17 @@ function init() {
   }
 
   updateScoreElements();
-}
+};
 
-init();
+async function newGame() {
+  wordToGuessElement.textContent = "⚙️ loading new word...";
+
+  currentWordToGuess = await getRandomWord();
+  blankedWord = [...replaceWordWithUnderscores(currentWordToGuess)];
+  startTimer(10);
+  updateWordSpan();
+  gameIsActive = true;
+}
 
 async function getRandomWord(type = "") {
   var supportedTypes = ["noun", "adjective", "adverb", "verb"];
@@ -63,18 +57,8 @@ async function getRandomWord(type = "") {
   );
 
   var data = await response.json();
-  console.log(data.word);
+  // console.log(data.word.toLowerCase());
   return data.word.toLowerCase();
-}
-
-async function newGame() {
-  wordToGuessElement.textContent = "⚙️ loading new word...";
-
-  currentWordToGuess = await getRandomWord();
-  blankedWord = [...replaceWordWithUnderscores(currentWordToGuess)];
-  startTimer(5);
-  updateWordSpan();
-  gameIsActive = true;
 }
 
 function startTimer(timeInSeconds) {
@@ -85,12 +69,13 @@ function startTimer(timeInSeconds) {
     countDown--;
     timerElement.textContent = `${countDown}s`;
     if (countDown < 1) {
-      clearInterval(timerInterval);
+      gameIsActive = false;
       timerElement.textContent = "Time's up!";
+      clearInterval(timerInterval);
+      failAudio.play();
       showStartButton();
       showGameOverMessage();
       incrementLosses();
-      gameIsActive = false;
     }
   }, 1000);
 }
@@ -108,7 +93,6 @@ function updateWordSpan() {
 }
 
 function updateScoreElements() {
-  console.log(score);
   winCountElement.textContent = score.wins;
   lossCountElement.textContent = score.losses;
 }
@@ -126,11 +110,11 @@ function checkSuccess() {
 }
 
 function showStartButton() {
-  startButton.setAttribute("style", "display: unset;");
+  startButton.setAttribute("style", "visibility: unset;");
 }
 
 function hideStartButton() {
-  startButton.setAttribute("style", "display: none;");
+  startButton.setAttribute("style", "visibility: hidden;");
 }
 
 function incrementWins() {
@@ -146,7 +130,6 @@ function incrementLosses() {
 }
 
 function updateLocalStorage() {
-  console.log(score);
   localStorage.setItem("score", JSON.stringify(score));
 }
 
@@ -177,6 +160,7 @@ window.addEventListener("keydown", function (event) {
       if (checkSuccess()) {
         gameIsActive = false;
         clearInterval(timerInterval);
+        successAudio.play();
         showStartButton();
         showSuccessMessage();
         incrementWins();

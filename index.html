@@ -5,25 +5,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mini Project</title>
+    <link rel="stylesheet" href="./styles/reset.css" />
     <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
   </head>
   <body>
-    <header>
-      <h1>Word Guess Game</h1>
-      <p>Time Remaining: <span id="timer"></span></p>
-    </header>
-    <main>
-      <section>
-        <p id="word-to-guess"></p>
-        <p id="result-message"></p>
-        <button id="start-button">Start</button>
-      </section>
-      <section>
-        <p>Wins: <span id="win-count"></span></p>
-        <p>Losses: <span id="loss-count"></span></p>
-        <button id="reset-score">Reset Score</button>
-      </section>
-    </main>
+    <section class="container">
+      <header>
+        <h1>Word Guess Game</h1>
+      </header>
+      <main>
+        <section class="main-section">
+          <p>Time Remaining: <span id="timer"></span></p>
+          <p id="word-to-guess" class="word-to-guess"></p>
+          <p id="result-message"></p>
+          <div class="button-container">
+            <button id="start-button">Start</button>
+          </div>
+        </section>
+        <section class="stats-section">
+          <section class="score">
+            <p>Wins: <span id="win-count"></span></p>
+            <p>Losses: <span id="loss-count"></span></p>
+          </section>
+          <div class="button-container">
+            <button id="reset-score">Reset Score</button>
+          </div>
+        </section>
+      </main>
+    </section>
 
     <script src="./scripts/script.js" type="module"></script>
   </body>

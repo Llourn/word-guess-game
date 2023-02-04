@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Itim&display=swap");
+
+:root {
+  --green: #ccf381;
+  --blue: #4831d4;
+}
+
+* {
+  font-family: "Itim", cursive;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  font-family: "Itim", cursive;
+}
+
+h1 {
+  padding-block: 1rem;
+  font-size: 200%;
+  text-align: center;
+}
+
+h2 {
+  font-size: 175%;
+}
+
+h3 {
+  font-size: 150%;
+}
+
+p {
+  margin-block: 1rem;
+  font-size: 125%;
+}
+
+strong {
+  text-transform: uppercase;
+}
+
+section.container {
+  margin: 1rem;
+  width: min(500px, 100vw);
+  max-width: 500px;
+  margin: max(1rem, auto);
+  background-color: var(--green);
+  border-radius: 15px;
+  padding: 1rem;
+}
+
+button {
+  text-transform: uppercase;
+  border-color: transparent;
+  border-radius: 15px;
+  padding: 0.5rem;
+  font-size: 125%;
+  max-width: 300px;
+  background-color: white;
+  color: var(--blue);
+  cursor: pointer;
+}
+
+.main-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-section > * {
+  min-height: 2rem;
+}
+
+.word-to-guess {
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 175%;
+}
+
+.score {
+  display: flex;
+  justify-content: space-around;
+}
+
+.button-container {
+  width: 100%;
+  text-align: center;
+}
+
+.button-container button {
+  width: 100%;
+  max-width: 300px;
+}
