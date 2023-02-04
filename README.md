@@ -14,7 +14,9 @@ A word guessing game I'm building with vanilla javacript. After clicking start t
 
 ## Installation
 
-No installation required. Just clone the repo and open the index.html file in your browser.
+This app is using an api call from https://api-ninjas.com/api/randomword to generate the random word. If you want to run this app using the API Ninja's random word API you'll need to obtain an api key.
+
+Once you have the API key you can create an env.js file in the assets folder with the contents `export const RANDOM_WORD_API_KEY = "YOUR_API_KEY_HERE";`. Then just run the `index.html` file in your browser.
 
 ## License
 
