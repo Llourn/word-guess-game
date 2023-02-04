@@ -6,25 +6,45 @@ The completed application should meet the following criteria:
 ✅ As a user, I want to start the game by clicking on a button.
 ✅ As a user, I want to try and guess a word by filling in a number of blanks that match the number of letters in that word.
 ✅ As a user, I want the game to be timed.
-As a user, I want to win the game when I have guessed all the letters in the word.
-As a user, I want to lose the game when the timer runs out before I have guessed all the letters.
-As a user, I want to see my total wins and losses on the screen.
+✅ As a user, I want to win the game when I have guessed all the letters in the word.
+✅ As a user, I want to lose the game when the timer runs out before I have guessed all the letters.
+✅ As a user, I want to see my total wins and losses on the screen.
 
 Specifications
 ✅ When a user presses a letter key, the user's guess should be captured as a key event.
 ✅ When a user correctly guesses a letter, the corresponding blank "_" should be replaced by the letter. For example, if the user correctly selects "a", then "a _ _ a _" should appear.
-When a user wins or loses a game, a message should appear and the timer should stop.
-When a user clicks the start button, the timer should reset.
-When a user refreshes or returns to the brower page, the win and loss counts should persist.
+✅ When a user wins or loses a game, a message should appear and the timer should stop.
+✅ When a user clicks the start button, the timer should reset.
+✅ When a user refreshes or returns to the brower page, the win and loss counts should persist.
 */
 
-var wordSpan = document.querySelector("#word-to-guess");
+var wordToGuessElement = document.querySelector("#word-to-guess");
 var startButton = document.querySelector("#start-button");
-var timerSpan = document.querySelector("#timer");
+var timerElement = document.querySelector("#timer");
+var messageElement = document.querySelector("#result-message");
+var lossCountElement = document.querySelector("#loss-count");
+var winCountElement = document.querySelector("#win-count");
+var resetScoreButton = document.querySelector("#reset-score");
 var gameIsActive = false;
 var timerInterval;
 var currentWordToGuess = "";
 var blankedWord = [];
+var score;
+
+function init() {
+  score = JSON.parse(localStorage.getItem("score"));
+
+  if (!score) {
+    score = {
+      wins: 0,
+      losses: 0,
+    };
+  }
+
+  updateScoreElements();
+}
+
+init();
 
 async function getRandomWord(type = "") {
   var supportedTypes = ["noun", "adjective", "adverb", "verb"];
@@ -47,11 +67,11 @@ async function getRandomWord(type = "") {
   return data.word.toLowerCase();
 }
 
-async function newWord() {
-  wordSpan.textContent = "⚙️ loading new word...";
+async function newGame() {
+  wordToGuessElement.textContent = "⚙️ loading new word...";
 
   currentWordToGuess = await getRandomWord();
-  blankedWord = [...replaceWithUnderscores(currentWordToGuess)];
+  blankedWord = [...replaceWordWithUnderscores(currentWordToGuess)];
   startTimer(5);
   updateWordSpan();
   gameIsActive = true;
@@ -59,21 +79,23 @@ async function newWord() {
 
 function startTimer(timeInSeconds) {
   var countDown = timeInSeconds;
-  timerSpan.textContent = `${countDown}s`;
+  timerElement.textContent = `${countDown}s`;
 
   timerInterval = setInterval(function () {
     countDown--;
-    timerSpan.textContent = `${countDown}s`;
+    timerElement.textContent = `${countDown}s`;
     if (countDown < 1) {
       clearInterval(timerInterval);
-      timerSpan.textContent = "Game over";
+      timerElement.textContent = "Time's up!";
       showStartButton();
+      showGameOverMessage();
+      incrementLosses();
       gameIsActive = false;
     }
   }, 1000);
 }
 
-function replaceWithUnderscores(word) {
+function replaceWordWithUnderscores(word) {
   var blank = "";
   for (let i = 0; i < word.length; i++) {
     blank += "_";
@@ -82,7 +104,21 @@ function replaceWithUnderscores(word) {
 }
 
 function updateWordSpan() {
-  wordSpan.textContent = blankedWord.join("");
+  wordToGuessElement.textContent = blankedWord.join("");
+}
+
+function updateScoreElements() {
+  console.log(score);
+  winCountElement.textContent = score.wins;
+  lossCountElement.textContent = score.losses;
+}
+
+function showGameOverMessage() {
+  messageElement.innerHTML = `😵 Game Over! The word was <strong>${currentWordToGuess}</strong>.`;
+}
+
+function showSuccessMessage() {
+  messageElement.innerHTML = `Congratulations! You win! 🎉`;
 }
 
 function checkSuccess() {
@@ -97,6 +133,36 @@ function hideStartButton() {
   startButton.setAttribute("style", "display: none;");
 }
 
+function incrementWins() {
+  score.wins++;
+  updateLocalStorage();
+  updateScoreElements();
+}
+
+function incrementLosses() {
+  score.losses++;
+  updateLocalStorage();
+  updateScoreElements();
+}
+
+function updateLocalStorage() {
+  console.log(score);
+  localStorage.setItem("score", JSON.stringify(score));
+}
+
+resetScoreButton.addEventListener("click", function () {
+  var confirmedReset = confirm("Click OK to clear your score.");
+  if (confirmedReset) {
+    score = {
+      wins: 0,
+      losses: 0,
+    };
+
+    updateLocalStorage();
+    updateScoreElements();
+  }
+});
+
 window.addEventListener("keydown", function (event) {
   if (gameIsActive) {
     var keypressed = event.key;
@@ -105,12 +171,15 @@ window.addEventListener("keydown", function (event) {
       if (letter === keypressed) {
         blankedWord[i] = letter;
       }
-      if (blankedWord != wordSpan.textContent) {
+      if (blankedWord != wordToGuessElement.textContent) {
         updateWordSpan();
       }
       if (checkSuccess()) {
+        gameIsActive = false;
         clearInterval(timerInterval);
         showStartButton();
+        showSuccessMessage();
+        incrementWins();
       }
     }
   }
@@ -118,5 +187,7 @@ window.addEventListener("keydown", function (event) {
 
 startButton.addEventListener("click", function () {
   hideStartButton();
-  newWord();
+  newGame();
+  startButton.textContent = "Play Again";
+  messageElement.textContent = "";
 });
