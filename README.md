@@ -4,8 +4,6 @@
 
 A word guessing game I'm building with vanilla javacript. After clicking start try guessing letters by pressing keys on your keyboard! Guess within the time limit and you win!
 
-The live site can be viewed [here](https://llourn.github.io/word-guess-game/).
-
 ![Screenshot of the live site](./screenshot.png)
 
 ## Table of Contents
